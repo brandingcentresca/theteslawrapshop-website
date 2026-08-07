@@ -61,8 +61,27 @@ export async function savePost(formData: FormData) {
   const slug = String(formData.get("slug") ?? "").trim() || slugify(title);
   const excerpt = String(formData.get("excerpt") ?? "").trim();
   const content = String(formData.get("content") ?? "");
-  const featured_image =
+  let featured_image =
     String(formData.get("featured_image") ?? "").trim() || null;
+
+  // If an image file was uploaded, store it in Backblaze and use that URL.
+  const imgFile = formData.get("featured_image_file");
+  if (imgFile instanceof File && imgFile.size > 0 && isBackblazeConfigured) {
+    const buffer = Buffer.from(await imgFile.arrayBuffer());
+    const safe = slugify(imgFile.name.replace(/\.[^.]+$/, "") || slug || "post");
+    const ext = imgFile.name.split(".").pop() ?? "jpg";
+    const key = `blog/${Date.now()}-${safe}.${ext}`;
+    try {
+      featured_image = await uploadToB2(
+        key,
+        buffer,
+        imgFile.type || "image/jpeg"
+      );
+    } catch (e) {
+      console.error("Blog image upload failed:", e);
+    }
+  }
+
   const published = formData.get("published") === "on";
   const published_at =
     String(formData.get("published_at") ?? "").trim() ||
