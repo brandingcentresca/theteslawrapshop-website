@@ -1,0 +1,143 @@
+@import "tailwindcss";
+
+@theme {
+  /* Surfaces */
+  --color-ink: #080b10;
+  --color-panel: #10161e;
+  --color-panel-2: #161e28;
+  --color-line: #232f3c;
+
+  /* Brand — turquoise/teal */
+  --color-brand: #17c3b2;
+  --color-brand-bright: #35e0cd;
+  --color-brand-dark: #0e9d8f;
+
+  /* Text */
+  --color-fg: #eef3f6;
+  --color-muted: #8fa1ae;
+  --color-faint: #64757f;
+
+  /* Fonts (self-hosted via @fontsource-variable, imported in layout.tsx) */
+  --font-sans: "Inter Variable", system-ui, sans-serif;
+  --font-display: "Space Grotesk Variable", "Inter Variable", system-ui, sans-serif;
+
+  /* Radii */
+  --radius-xl: 1rem;
+  --radius-2xl: 1.25rem;
+}
+
+:root {
+  --background: var(--color-ink);
+  --foreground: var(--color-fg);
+}
+
+html {
+  scroll-behavior: smooth;
+  background-color: var(--color-ink);
+}
+
+body {
+  background-color: var(--color-ink);
+  color: var(--color-fg);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Utility helpers */
+.container-x {
+  width: 100%;
+  max-width: 80rem;
+  margin-inline: auto;
+  padding-inline: 1.25rem;
+}
+
+@media (min-width: 768px) {
+  .container-x {
+    padding-inline: 2rem;
+  }
+}
+
+.text-gradient {
+  background: linear-gradient(100deg, var(--color-brand-bright), var(--color-brand));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+.card {
+  background-color: var(--color-panel);
+  border: 1px solid var(--color-line);
+  border-radius: var(--radius-2xl);
+}
+
+.glow-brand {
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--color-brand) 40%, transparent),
+    0 20px 60px -20px color-mix(in srgb, var(--color-brand) 45%, transparent);
+}
+
+.hero-grid {
+  background-image:
+    linear-gradient(to right, color-mix(in srgb, var(--color-line) 60%, transparent) 1px, transparent 1px),
+    linear-gradient(to bottom, color-mix(in srgb, var(--color-line) 60%, transparent) 1px, transparent 1px);
+  background-size: 46px 46px;
+  mask-image: radial-gradient(ellipse 80% 60% at 50% 0%, #000 40%, transparent 100%);
+}
+
+/* Prose for blog posts */
+.prose-tws {
+  color: var(--color-fg);
+  line-height: 1.75;
+}
+.prose-tws h2 {
+  font-family: var(--font-display);
+  font-size: 1.75rem;
+  font-weight: 700;
+  margin-top: 2.5rem;
+  margin-bottom: 1rem;
+  letter-spacing: -0.01em;
+}
+.prose-tws h3 {
+  font-family: var(--font-display);
+  font-size: 1.3rem;
+  font-weight: 600;
+  margin-top: 1.75rem;
+  margin-bottom: 0.75rem;
+}
+.prose-tws p {
+  margin-bottom: 1.15rem;
+  color: color-mix(in srgb, var(--color-fg) 88%, transparent);
+}
+.prose-tws ul {
+  list-style: disc;
+  padding-left: 1.4rem;
+  margin-bottom: 1.15rem;
+}
+.prose-tws ol {
+  list-style: decimal;
+  padding-left: 1.4rem;
+  margin-bottom: 1.15rem;
+}
+.prose-tws li {
+  margin-bottom: 0.4rem;
+}
+.prose-tws a {
+  color: var(--color-brand-bright);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.prose-tws strong {
+  color: var(--color-fg);
+  font-weight: 700;
+}
+.prose-tws img {
+  border-radius: var(--radius-xl);
+  margin-block: 1.5rem;
+}
+
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.animate-fade-up {
+  animation: fade-up 0.6s ease both;
+}
