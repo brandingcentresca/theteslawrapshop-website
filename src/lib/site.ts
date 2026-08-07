@@ -51,16 +51,16 @@ export const pricing = [
   {
     name: "Standard Colour Change",
     original: 4500,
-    price: 3500,
+    price: 2800,
     description: "Any 3M or Avery manufactured colour.",
-    popular: false,
+    popular: true,
   },
   {
     name: "Custom Printed Colours",
     original: 5700,
     price: 4500,
     description: "Any custom printed colour of your choice.",
-    popular: true,
+    popular: false,
   },
   {
     name: "Custom Printed Design",
@@ -104,12 +104,6 @@ export const whyUs = [
     description:
       "Every job is done with your satisfaction as the goal. Our experienced installers sweat every little detail.",
     icon: "Search",
-  },
-  {
-    title: "1 Year Warranty",
-    description:
-      "We're confident in our work — every wrap includes a full year of warranty against material breakdown or peeling.",
-    icon: "ShieldCheck",
   },
   {
     title: "Secure Storage",
@@ -189,10 +183,5 @@ export const faqs = [
     question: "Can I provide my own material?",
     answer:
       "Absolutely — as long as the material is from Avery Dennison, 3M or Hexis, we'll happily install it for you.",
-  },
-  {
-    question: "Do you offer any warranty?",
-    answer:
-      "Yes. Every vehicle we wrap comes with a 1-year warranty against material breakdown and peeling.",
   },
 ] as const;

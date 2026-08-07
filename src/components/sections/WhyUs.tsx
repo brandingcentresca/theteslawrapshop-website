@@ -10,7 +10,7 @@ export function WhyUs() {
         title="Details that make the difference"
         subtitle="We only wrap Teslas — so we know every panel, curve and edge. Here's what you get with every job."
       />
-      <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {whyUs.map((item) => (
           <div key={item.title} className="card p-7">
             <Icon name={item.icon} size={28} className="text-brand mb-5" />

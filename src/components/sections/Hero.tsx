@@ -25,7 +25,7 @@ export function Hero() {
           <div className="animate-fade-up">
             <div className="inline-flex items-center gap-2 rounded-full border border-line bg-panel/60 px-4 py-1.5 text-xs font-medium text-muted mb-6">
               <ShieldCheck size={14} className="text-brand" />
-              Premium 3M &amp; Avery vinyl · 1-year warranty
+              Premium 3M &amp; Avery vinyl · Tesla specialists
             </div>
 
             <h1 className="font-display text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight leading-[1.05]">
@@ -84,7 +84,7 @@ export function Hero() {
 
             <div className="absolute -bottom-5 -left-5 card px-5 py-4 backdrop-blur-md bg-panel/90 hidden sm:block">
               <p className="text-2xl font-display font-bold text-brand-bright">
-                $3,500
+                $2,800
               </p>
               <p className="text-xs text-muted">Full colour change from</p>
             </div>

@@ -10,7 +10,7 @@ export function Pricing() {
       <SectionHeading
         eyebrow="Transparent Pricing"
         title="Simple, upfront wrap packages"
-        subtitle="No surprises. Pick the finish you want — every package uses premium 3M and Avery Dennison vinyl and includes a 1-year warranty."
+        subtitle="No surprises. Pick the finish you want — every package uses premium 3M and Avery Dennison vinyl."
       />
 
       <div className="grid gap-6 md:grid-cols-3 max-w-5xl mx-auto">
@@ -43,7 +43,6 @@ export function Pricing() {
               {[
                 "Premium 3M / Avery vinyl",
                 "Professional installation",
-                "1-year warranty included",
                 "Secure, insured storage",
               ].map((f) => (
                 <li key={f} className="flex items-center gap-2.5">

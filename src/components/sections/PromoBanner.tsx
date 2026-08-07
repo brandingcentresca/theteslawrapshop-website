@@ -51,7 +51,7 @@ export function PromoBanner() {
       <div className="container-x flex flex-wrap items-center justify-center gap-x-6 gap-y-2 py-2.5 text-sm">
         <span className="inline-flex items-center gap-2 font-semibold">
           <Zap size={16} className="fill-ink" />
-          Limited-time deal — Colour changes from $3,500
+          Limited-time deal — Colour changes from $2,800
         </span>
         {time && (
           <div className="flex items-center gap-3">
