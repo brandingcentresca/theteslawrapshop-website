@@ -21,10 +21,10 @@ export function Header() {
   return (
     <header
       className={cn(
-        "sticky top-0 z-50 transition-colors duration-300",
+        "sticky top-0 z-50 border-b transition-all duration-300",
         scrolled
-          ? "bg-ink/90 backdrop-blur-md border-b border-line"
-          : "bg-transparent border-b border-transparent"
+          ? "bg-dark/95 backdrop-blur-md border-white/10 shadow-lg shadow-black/30"
+          : "bg-dark border-white/5"
       )}
     >
       <div className="container-x flex items-center justify-between h-18 py-4">
@@ -32,7 +32,7 @@ export function Header() {
           <span className="grid place-items-center h-9 w-9 rounded-lg bg-brand text-ink font-display font-bold text-lg">
             T
           </span>
-          <span className="font-display font-bold text-base leading-tight">
+          <span className="font-display font-bold text-base leading-tight text-white">
             The Tesla
             <br />
             <span className="text-brand-bright">Wrap Shop</span>
@@ -44,7 +44,7 @@ export function Header() {
             <Link
               key={item.href}
               href={item.href}
-              className="text-sm font-medium text-muted hover:text-fg transition-colors"
+              className="text-sm font-medium text-white/70 hover:text-white transition-colors"
             >
               {item.label}
             </Link>
@@ -54,18 +54,22 @@ export function Header() {
         <div className="hidden lg:flex items-center gap-4">
           <a
             href={site.phoneHref}
-            className="flex items-center gap-2 text-sm font-semibold text-fg hover:text-brand-bright transition-colors"
+            className="flex items-center gap-2 text-sm font-semibold text-white hover:text-brand-bright transition-colors"
           >
-            <Phone size={16} className="text-brand" />
+            <Phone size={16} className="text-brand-bright" />
             {site.phone}
           </a>
-          <ButtonLink href="/#quote" size="sm">
+          <ButtonLink
+            href="/#quote"
+            size="sm"
+            className="bg-brand text-white hover:bg-brand-bright"
+          >
             Get a Quote
           </ButtonLink>
         </div>
 
         <button
-          className="lg:hidden text-fg p-2 -mr-2"
+          className="lg:hidden text-white p-2 -mr-2"
           onClick={() => setOpen((v) => !v)}
           aria-label="Toggle menu"
         >
@@ -74,14 +78,14 @@ export function Header() {
       </div>
 
       {open && (
-        <div className="lg:hidden border-t border-line bg-ink/95 backdrop-blur-md">
+        <div className="lg:hidden border-t border-white/10 bg-dark/95 backdrop-blur-md">
           <nav className="container-x flex flex-col py-4">
             {nav.map((item) => (
               <Link
                 key={item.href}
                 href={item.href}
                 onClick={() => setOpen(false)}
-                className="py-3 text-base font-medium text-muted hover:text-fg border-b border-line/50"
+                className="py-3 text-base font-medium text-white/80 hover:text-white border-b border-white/10"
               >
                 {item.label}
               </Link>
@@ -89,12 +93,16 @@ export function Header() {
             <div className="flex flex-col gap-3 pt-5">
               <a
                 href={site.phoneHref}
-                className="flex items-center gap-2 font-semibold"
+                className="flex items-center gap-2 font-semibold text-white"
               >
-                <Phone size={18} className="text-brand" />
+                <Phone size={18} className="text-brand-bright" />
                 {site.phone}
               </a>
-              <ButtonLink href="/#quote" onClick={() => setOpen(false)}>
+              <ButtonLink
+                href="/#quote"
+                onClick={() => setOpen(false)}
+                className="bg-brand text-white hover:bg-brand-bright"
+              >
                 Get a Quote
               </ButtonLink>
             </div>
