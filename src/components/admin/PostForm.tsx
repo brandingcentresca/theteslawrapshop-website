@@ -47,14 +47,31 @@ export function PostForm({ post }: { post?: BlogPost }) {
 
       <div>
         <label className="block text-sm font-medium mb-2">
-          Featured image URL
+          Featured image
         </label>
+        <input
+          type="file"
+          name="featured_image_file"
+          accept="image/*"
+          className={inputClass}
+        />
+        <p className="text-xs text-faint mt-1.5">
+          Upload an image (stored in Backblaze) — or paste a URL below instead.
+        </p>
         <input
           name="featured_image"
           defaultValue={post?.featured_image ?? ""}
-          className={inputClass}
-          placeholder="https://…"
+          className={`${inputClass} mt-2`}
+          placeholder="https://… (optional image URL)"
         />
+        {post?.featured_image && (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img
+            src={post.featured_image}
+            alt="Current featured image"
+            className="mt-3 h-28 w-auto rounded object-cover border border-line"
+          />
+        )}
       </div>
 
       <div>
