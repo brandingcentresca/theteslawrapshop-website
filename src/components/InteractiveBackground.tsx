@@ -3,56 +3,112 @@
 import { useEffect, useRef } from "react";
 
 /**
- * Modern, premium interactive background that fills the dead white space behind
- * the page. Renders layered "silk" ribbons — smooth, slowly undulating gradient
- * bands, reminiscent of vinyl flowing over a panel — floating above a soft mesh
- * of drifting red/charcoal glows.
+ * Interactive, EV-themed background for the Tesla wrap shop. It evokes a car in
+ * motion: aerodynamic "speed streaks" race across several parallax depth layers,
+ * while glowing electric-charge particles (brand red + an EV/eco green) dart past
+ * with light trails. Soft ambient glows warm the otherwise white page.
  *
- * It reacts to the pointer: a warm spotlight follows the cursor and the ribbons
- * swell gently toward it. The canvas is fixed, sits behind all content (negative
- * z-index in globals.css) and never intercepts clicks (pointer-events: none);
- * pointer position is read from a window listener instead. Honours
- * prefers-reduced-motion and pauses when the tab is hidden.
+ * Depth comes from parallax: layers drift at different rates in response to both
+ * scroll position and pointer movement, so nearer layers move faster than far
+ * ones. The canvas is fixed, sits behind all content (negative z-index in
+ * globals.css) and never intercepts clicks (pointer-events: none) — pointer and
+ * scroll are read from window listeners. Honours prefers-reduced-motion and
+ * pauses when the tab is hidden.
  */
 
-const BRAND = "204, 0, 0"; // #cc0000
-const BRAND_BRIGHT = "224, 0, 0"; // #e00000
-const CHARCOAL = "22, 23, 25"; // near --color-dark-2
+const RED = "204, 0, 0"; // #cc0000
+const RED_BRIGHT = "224, 0, 0"; // #e00000
+const CHARCOAL = "24, 24, 27";
+const ECO = "22, 200, 120"; // electric EV/eco green accent
 
-type Ribbon = {
-  baseY: number; // 0..1 fraction of height
-  amp: number; // px
-  len: number; // wavelength px
+const MARGIN = 90;
+
+type Streak = {
+  x: number;
+  baseY: number;
+  len: number;
+  w: number;
   speed: number;
-  phase: number;
-  thickness: number; // px
-  color: string; // "r, g, b"
   alpha: number;
+  color: string;
+};
+
+type LayerDef = {
+  density: number; // streaks per 1000px of width
+  speed: [number, number];
+  len: [number, number];
+  w: [number, number];
+  alpha: number;
+  mouseAmp: number;
+  scrollAmp: number;
+  colors: string[];
+};
+
+const LAYERS: LayerDef[] = [
+  // Far — big, faint, slow.
+  {
+    density: 5,
+    speed: [0.15, 0.4],
+    len: [160, 320],
+    w: [1, 2],
+    alpha: 0.05,
+    mouseAmp: 10,
+    scrollAmp: -0.05,
+    colors: [CHARCOAL, RED],
+  },
+  // Mid.
+  {
+    density: 7,
+    speed: [0.5, 1.0],
+    len: [120, 240],
+    w: [1, 2],
+    alpha: 0.07,
+    mouseAmp: 24,
+    scrollAmp: -0.11,
+    colors: [RED, CHARCOAL],
+  },
+  // Near — shorter, brighter, fast.
+  {
+    density: 8,
+    speed: [1.1, 2.1],
+    len: [80, 170],
+    w: [1.5, 3],
+    alpha: 0.09,
+    mouseAmp: 40,
+    scrollAmp: -0.19,
+    colors: [RED_BRIGHT, RED],
+  },
+];
+
+type Particle = {
+  x: number;
+  baseY: number;
+  speed: number;
+  size: number;
+  trail: number;
+  color: string;
 };
 
 type Orb = {
-  x: number; // 0..1
-  y: number; // 0..1
-  r: number; // fraction of max(w,h)
+  x: number;
+  y: number;
+  r: number;
   color: string;
   alpha: number;
   dx: number;
   dy: number;
+  mouseAmp: number;
 };
 
-const RIBBONS: Ribbon[] = [
-  { baseY: 0.18, amp: 34, len: 520, speed: 0.00022, phase: 0.0, thickness: 150, color: BRAND, alpha: 0.05 },
-  { baseY: 0.34, amp: 46, len: 640, speed: -0.00018, phase: 1.4, thickness: 190, color: CHARCOAL, alpha: 0.045 },
-  { baseY: 0.54, amp: 40, len: 560, speed: 0.00026, phase: 2.7, thickness: 170, color: BRAND_BRIGHT, alpha: 0.05 },
-  { baseY: 0.72, amp: 52, len: 700, speed: -0.00021, phase: 4.1, thickness: 210, color: CHARCOAL, alpha: 0.04 },
-  { baseY: 0.88, amp: 38, len: 600, speed: 0.0002, phase: 5.5, thickness: 160, color: BRAND, alpha: 0.05 },
+const ORBS: Orb[] = [
+  { x: 0.16, y: 0.18, r: 0.5, color: RED, alpha: 0.06, dx: 0.00003, dy: 0.00002, mouseAmp: 22 },
+  { x: 0.85, y: 0.7, r: 0.45, color: ECO, alpha: 0.04, dx: -0.000025, dy: 0.00003, mouseAmp: 30 },
+  { x: 0.55, y: 0.4, r: 0.55, color: CHARCOAL, alpha: 0.04, dx: 0.00002, dy: -0.000028, mouseAmp: 16 },
 ];
 
-const ORBS: Orb[] = [
-  { x: 0.18, y: 0.2, r: 0.55, color: BRAND, alpha: 0.06, dx: 0.00003, dy: 0.00002 },
-  { x: 0.82, y: 0.32, r: 0.45, color: BRAND_BRIGHT, alpha: 0.05, dx: -0.000025, dy: 0.00003 },
-  { x: 0.5, y: 0.85, r: 0.6, color: CHARCOAL, alpha: 0.045, dx: 0.00002, dy: -0.000028 },
-];
+function rand(min: number, max: number) {
+  return min + Math.random() * (max - min);
+}
 
 export function InteractiveBackground() {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -72,11 +128,43 @@ export function InteractiveBackground() {
     let dpr = 1;
     let raf = 0;
     let running = true;
-    let t = 0;
 
-    // Raw + smoothed pointer, in CSS pixels. Off-screen until first move.
-    const pointer = { x: -9999, y: -9999, active: false };
-    const smooth = { x: -9999, y: -9999, glow: 0 };
+    let layerStreaks: Streak[][] = [];
+    let particles: Particle[] = [];
+
+    let scrollY = window.scrollY;
+    // Pointer offset from centre, normalised to -1..1, plus a smoothed copy.
+    const mouse = { x: 0, y: 0 };
+    const smooth = { x: 0, y: 0 };
+
+    function seed() {
+      const fh = height + MARGIN * 2;
+      layerStreaks = LAYERS.map((layer) => {
+        const count = Math.max(
+          4,
+          Math.round((width / 1000) * layer.density)
+        );
+        return Array.from({ length: count }, () => ({
+          x: rand(0, width + MARGIN * 2),
+          baseY: rand(0, fh),
+          len: rand(layer.len[0], layer.len[1]),
+          w: rand(layer.w[0], layer.w[1]),
+          speed: rand(layer.speed[0], layer.speed[1]),
+          alpha: layer.alpha * rand(0.7, 1.2),
+          color: layer.colors[Math.floor(Math.random() * layer.colors.length)],
+        }));
+      });
+
+      const pCount = Math.max(6, Math.round((width / 1000) * 6));
+      particles = Array.from({ length: pCount }, () => ({
+        x: rand(0, width),
+        baseY: rand(0, height + MARGIN * 2),
+        speed: rand(2.4, 5.2),
+        size: rand(1.4, 2.6),
+        trail: rand(40, 90),
+        color: Math.random() < 0.45 ? ECO : RED_BRIGHT,
+      }));
+    }
 
     function resize() {
       dpr = Math.min(window.devicePixelRatio || 1, 2);
@@ -87,13 +175,24 @@ export function InteractiveBackground() {
       canvas!.style.width = `${width}px`;
       canvas!.style.height = `${height}px`;
       ctx!.setTransform(dpr, 0, 0, dpr, 0, 0);
+      seed();
+    }
+
+    function wrap(v: number, span: number) {
+      return ((v % span) + span) % span;
     }
 
     function drawOrbs() {
       for (const o of ORBS) {
-        const drift = reduceMotion ? 0 : t;
-        const ox = (o.x + Math.sin(drift * o.dx) * 0.05) * width;
-        const oy = (o.y + Math.cos(drift * o.dy) * 0.05) * height;
+        const ox =
+          (o.x + Math.sin(scrollY * 0.0004 * (o.dx > 0 ? 1 : -1)) * 0.03) *
+            width +
+          smooth.x * o.mouseAmp;
+        const oy =
+          o.y * height -
+          scrollY * 0.04 +
+          smooth.y * o.mouseAmp +
+          Math.cos(scrollY * 0.0004) * 8;
         const r = o.r * Math.max(width, height);
         const grad = ctx!.createRadialGradient(ox, oy, 0, ox, oy, r);
         grad.addColorStop(0, `rgba(${o.color}, ${o.alpha})`);
@@ -103,100 +202,100 @@ export function InteractiveBackground() {
       }
     }
 
-    // Extra lift applied to a ribbon at horizontal position x, so ribbons swell
-    // toward the cursor for a soft interactive ripple.
-    function pointerLift(x: number, baseY: number) {
-      if (smooth.glow <= 0.01) return 0;
-      const sigma = 190;
-      const dx = x - smooth.x;
-      const falloffX = Math.exp(-(dx * dx) / (2 * sigma * sigma));
-      const dy = baseY - smooth.y;
-      const falloffY = Math.exp(-(dy * dy) / (2 * 240 * 240));
-      return -70 * falloffX * falloffY * smooth.glow;
-    }
+    function drawStreaks(advance: boolean) {
+      const fh = height + MARGIN * 2;
+      for (let li = 0; li < LAYERS.length; li++) {
+        const layer = LAYERS[li];
+        const streaks = layerStreaks[li];
+        const fw = width + MARGIN * 2;
+        for (const s of streaks) {
+          if (advance) {
+            s.x += s.speed;
+            if (s.x > fw + s.len) s.x -= fw + s.len * 2;
+          }
+          const x =
+            wrap(s.x + smooth.x * layer.mouseAmp, fw + s.len) - s.len - MARGIN / 2;
+          const y =
+            wrap(s.baseY + scrollY * layer.scrollAmp, fh) -
+            MARGIN +
+            smooth.y * layer.mouseAmp;
 
-    function drawRibbon(rb: Ribbon) {
-      const yBase = rb.baseY * height;
-      const step = 12;
-      ctx!.beginPath();
-      ctx!.moveTo(-60, yBase);
-      for (let x = -60; x <= width + 60; x += step) {
-        const wave =
-          Math.sin(x / rb.len + t * rb.speed + rb.phase) * rb.amp +
-          Math.sin(x / (rb.len * 0.5) + t * rb.speed * 1.7 + rb.phase) *
-            (rb.amp * 0.35);
-        const y = yBase + wave + pointerLift(x, yBase);
-        ctx!.lineTo(x, y);
-      }
-      // Close the band downward to form a filled ribbon.
-      ctx!.lineTo(width + 60, yBase + rb.thickness);
-      ctx!.lineTo(-60, yBase + rb.thickness);
-      ctx!.closePath();
-
-      const grad = ctx!.createLinearGradient(0, yBase - rb.amp, 0, yBase + rb.thickness);
-      grad.addColorStop(0, `rgba(${rb.color}, 0)`);
-      grad.addColorStop(0.4, `rgba(${rb.color}, ${rb.alpha})`);
-      grad.addColorStop(1, `rgba(${rb.color}, 0)`);
-      ctx!.fillStyle = grad;
-      ctx!.fill();
-    }
-
-    function drawCursorGlow() {
-      if (smooth.glow <= 0.01) return;
-      const r = 260;
-      const grad = ctx!.createRadialGradient(
-        smooth.x,
-        smooth.y,
-        0,
-        smooth.x,
-        smooth.y,
-        r
-      );
-      grad.addColorStop(0, `rgba(${BRAND_BRIGHT}, ${0.08 * smooth.glow})`);
-      grad.addColorStop(1, `rgba(${BRAND_BRIGHT}, 0)`);
-      ctx!.fillStyle = grad;
-      ctx!.fillRect(smooth.x - r, smooth.y - r, r * 2, r * 2);
-    }
-
-    function step() {
-      // Ease the smoothed pointer toward the raw one for fluid motion.
-      if (pointer.active) {
-        if (smooth.x < -9000) {
-          smooth.x = pointer.x;
-          smooth.y = pointer.y;
+          const grad = ctx!.createLinearGradient(x, y, x + s.len, y);
+          grad.addColorStop(0, `rgba(${s.color}, 0)`);
+          grad.addColorStop(0.5, `rgba(${s.color}, ${s.alpha})`);
+          grad.addColorStop(1, `rgba(${s.color}, 0)`);
+          ctx!.strokeStyle = grad;
+          ctx!.lineWidth = s.w;
+          ctx!.beginPath();
+          ctx!.moveTo(x, y);
+          ctx!.lineTo(x + s.len, y);
+          ctx!.stroke();
         }
-        smooth.x += (pointer.x - smooth.x) * 0.08;
-        smooth.y += (pointer.y - smooth.y) * 0.08;
-        smooth.glow += (1 - smooth.glow) * 0.06;
-      } else {
-        smooth.glow += (0 - smooth.glow) * 0.05;
       }
+    }
 
+    function drawParticles(advance: boolean) {
+      const fh = height + MARGIN * 2;
+      const mouseAmp = 52;
+      const scrollAmp = -0.24;
+      for (const p of particles) {
+        if (advance) {
+          p.x += p.speed;
+          if (p.x > width + p.trail + MARGIN) p.x = -p.trail - MARGIN;
+        }
+        const x = p.x + smooth.x * mouseAmp;
+        const y =
+          wrap(p.baseY + scrollY * scrollAmp, fh) - MARGIN + smooth.y * mouseAmp;
+
+        // Trailing light behind the charge.
+        const tg = ctx!.createLinearGradient(x - p.trail, y, x, y);
+        tg.addColorStop(0, `rgba(${p.color}, 0)`);
+        tg.addColorStop(1, `rgba(${p.color}, 0.5)`);
+        ctx!.strokeStyle = tg;
+        ctx!.lineWidth = p.size;
+        ctx!.beginPath();
+        ctx!.moveTo(x - p.trail, y);
+        ctx!.lineTo(x, y);
+        ctx!.stroke();
+
+        // Glowing head.
+        const g = ctx!.createRadialGradient(x, y, 0, x, y, p.size * 5);
+        g.addColorStop(0, `rgba(${p.color}, 0.9)`);
+        g.addColorStop(0.4, `rgba(${p.color}, 0.4)`);
+        g.addColorStop(1, `rgba(${p.color}, 0)`);
+        ctx!.fillStyle = g;
+        ctx!.beginPath();
+        ctx!.arc(x, y, p.size * 5, 0, Math.PI * 2);
+        ctx!.fill();
+      }
+    }
+
+    function frame(advance: boolean) {
+      smooth.x += (mouse.x - smooth.x) * 0.06;
+      smooth.y += (mouse.y - smooth.y) * 0.06;
       ctx!.clearRect(0, 0, width, height);
       drawOrbs();
-      for (const rb of RIBBONS) drawRibbon(rb);
-      drawCursorGlow();
+      drawStreaks(advance);
+      drawParticles(advance);
     }
 
     function loop() {
       if (!running) return;
-      t += 16;
-      step();
+      frame(true);
       raf = window.requestAnimationFrame(loop);
     }
 
     // --- Event handlers -----------------------------------------------------
     const onPointerMove = (e: PointerEvent) => {
-      pointer.x = e.clientX;
-      pointer.y = e.clientY;
-      pointer.active = true;
+      mouse.x = (e.clientX / width - 0.5) * 2;
+      mouse.y = (e.clientY / height - 0.5) * 2;
     };
-    const onPointerLeave = () => {
-      pointer.active = false;
+    const onScroll = () => {
+      scrollY = window.scrollY;
     };
     const onResize = () => {
       resize();
-      if (reduceMotion) step();
+      if (reduceMotion) frame(false);
     };
     const onVisibility = () => {
       if (document.hidden) {
@@ -211,11 +310,11 @@ export function InteractiveBackground() {
     resize();
     window.addEventListener("resize", onResize);
     window.addEventListener("pointermove", onPointerMove, { passive: true });
-    window.addEventListener("pointerleave", onPointerLeave);
+    window.addEventListener("scroll", onScroll, { passive: true });
     document.addEventListener("visibilitychange", onVisibility);
 
     if (reduceMotion) {
-      step();
+      frame(false);
     } else {
       loop();
     }
@@ -225,7 +324,7 @@ export function InteractiveBackground() {
       window.cancelAnimationFrame(raf);
       window.removeEventListener("resize", onResize);
       window.removeEventListener("pointermove", onPointerMove);
-      window.removeEventListener("pointerleave", onPointerLeave);
+      window.removeEventListener("scroll", onScroll);
       document.removeEventListener("visibilitychange", onVisibility);
     };
   }, []);
