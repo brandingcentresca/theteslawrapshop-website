@@ -4,6 +4,7 @@ import "./globals.css";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { WhatsAppButton } from "@/components/WhatsAppButton";
+import { InteractiveBackground } from "@/components/InteractiveBackground";
 import { PromoBanner } from "@/components/sections/PromoBanner";
 import { site } from "@/lib/site";
 
@@ -47,6 +48,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       className="h-full antialiased"
     >
       <body className="min-h-full flex flex-col">
+        <InteractiveBackground />
         <PromoBanner />
         <Header />
         <main className="flex-1">{children}</main>

@@ -38,14 +38,35 @@
 
 html {
   scroll-behavior: smooth;
-  background-color: var(--color-ink);
+  /* Soft off-white base so the page never reads as flat, dead white — the
+     interactive canvas paints on top of this and gives it depth. */
+  background-color: #fafafa;
+  background-image: radial-gradient(
+    ellipse 120% 80% at 50% -10%,
+    color-mix(in srgb, var(--color-brand) 5%, transparent),
+    transparent 60%
+  );
+  background-attachment: fixed;
 }
 
 body {
-  background-color: var(--color-ink);
+  /* Transparent so the fixed InteractiveBackground canvas (z-index: -1) shows
+     through the gaps and dead space between sections. */
+  background-color: transparent;
   color: var(--color-fg);
   font-family: var(--font-sans);
   -webkit-font-smoothing: antialiased;
+}
+
+/* Fixed, full-viewport interactive constellation canvas. Sits behind all
+   content and never intercepts pointer events. */
+.tws-bg-canvas {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
 }
 
 /* Utility helpers */
