@@ -4,7 +4,7 @@ import { Icon } from "../ui/Icon";
 
 export function Services() {
   return (
-    <Section id="services" className="bg-panel/30 border-y border-line">
+    <Section id="services">
       <SectionHeading
         eyebrow="What We Do"
         title="Wraps built around your Tesla"

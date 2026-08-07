@@ -4,7 +4,7 @@ import { Icon } from "../ui/Icon";
 
 export function WhyUs() {
   return (
-    <Section id="why-us">
+    <Section id="why-us" className="bg-panel-2/70 border-y border-line">
       <SectionHeading
         eyebrow="Why Choose Us"
         title="Details that make the difference"

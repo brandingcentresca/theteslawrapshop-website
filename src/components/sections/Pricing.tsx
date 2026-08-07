@@ -6,7 +6,7 @@ import { cn } from "@/lib/utils";
 
 export function Pricing() {
   return (
-    <Section id="pricing">
+    <Section id="pricing" className="bg-panel-2/70 border-y border-line">
       <SectionHeading
         eyebrow="Transparent Pricing"
         title="Simple, upfront wrap packages"

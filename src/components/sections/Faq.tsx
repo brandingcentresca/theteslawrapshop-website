@@ -10,7 +10,10 @@ export function Faq() {
   const [open, setOpen] = useState<number | null>(0);
 
   return (
-    <section id="faq" className="py-20 md:py-28 scroll-mt-24 bg-panel/30 border-y border-line">
+    <section
+      id="faq"
+      className="py-20 md:py-28 scroll-mt-24 bg-panel-2/70 border-y border-line"
+    >
       <div className="container-x">
         <SectionHeading
           eyebrow="FAQ"

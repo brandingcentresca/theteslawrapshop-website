@@ -3,7 +3,7 @@ import { Section, SectionHeading } from "../ui/Section";
 
 export function Process() {
   return (
-    <Section id="process" className="bg-panel/30 border-y border-line">
+    <Section id="process">
       <SectionHeading
         eyebrow="Our Process"
         title="From idea to installed in four steps"

@@ -22,7 +22,10 @@ export function Gallery({ items }: { items: GalleryItem[] }) {
   );
 
   return (
-    <section id="gallery" className="py-20 md:py-28 scroll-mt-24">
+    <section
+      id="gallery"
+      className="py-20 md:py-28 scroll-mt-24 bg-panel-2/70 border-y border-line"
+    >
       <div className="container-x">
         <SectionHeading
           eyebrow="Our Work"
