@@ -4,7 +4,7 @@
 
 import type { GalleryItem, BlogPost } from "./types";
 
-const CDN = "https://cdn.theteslawrapshop.com/wp-content/uploads";
+const CDN = "https://f005.backblazeb2.com/file/theteslawrapshop-media";
 
 export const LOGO_URL = `${CDN}/2023/01/The-Tesla-Wrap-Shop-Logo.webp`;
 
