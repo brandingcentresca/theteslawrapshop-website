@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { savePost } from "@/app/admin/actions";
 import { Button } from "@/components/ui/Button";
+import { RichTextEditor } from "@/components/admin/RichTextEditor";
 import type { BlogPost } from "@/lib/types";
 
 const inputClass =
@@ -86,16 +87,8 @@ export function PostForm({ post }: { post?: BlogPost }) {
       </div>
 
       <div>
-        <label className="block text-sm font-medium mb-2">
-          Content (Markdown)
-        </label>
-        <textarea
-          name="content"
-          rows={16}
-          defaultValue={post?.content}
-          className={`${inputClass} font-mono text-sm`}
-          placeholder={"## Heading\n\nWrite your article using Markdown…"}
-        />
+        <label className="block text-sm font-medium mb-2">Content</label>
+        <RichTextEditor initialHTML={post?.content ?? ""} />
       </div>
 
       <label className="flex items-center gap-3 text-sm">

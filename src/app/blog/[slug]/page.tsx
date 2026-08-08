@@ -2,9 +2,8 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { CalendarDays, ArrowLeft } from "lucide-react";
-import ReactMarkdown from "react-markdown";
-import remarkGfm from "remark-gfm";
 import { getPostBySlug, getPublishedPosts } from "@/lib/queries";
+import { sanitizePostHtml } from "@/lib/sanitize";
 import { formatDate } from "@/lib/utils";
 import { ButtonLink } from "@/components/ui/Button";
 import { blogPosts } from "@/lib/data";
@@ -88,11 +87,10 @@ export default async function BlogPostPage({
           </div>
         )}
 
-        <div className="prose-tws mt-10">
-          <ReactMarkdown remarkPlugins={[remarkGfm]}>
-            {post.content}
-          </ReactMarkdown>
-        </div>
+        <div
+          className="prose-tws mt-10"
+          dangerouslySetInnerHTML={{ __html: sanitizePostHtml(post.content) }}
+        />
 
         <div className="mt-12 card p-8 text-center">
           <h2 className="font-display text-2xl font-bold">
