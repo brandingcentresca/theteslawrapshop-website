@@ -16,6 +16,10 @@ export async function generateStaticParams() {
 
 export const dynamicParams = true;
 
+// Revalidate each article at most once a minute so edits made in the admin
+// panel appear without a redeploy. Mutations also revalidate on-demand.
+export const revalidate = 60;
+
 export async function generateMetadata({
   params,
 }: {

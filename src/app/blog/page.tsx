@@ -11,6 +11,10 @@ export const metadata: Metadata = {
     "Guides, tips and inspiration for wrapping your Tesla — costs, maintenance, finishes and more from The Tesla Wrap Shop in Toronto.",
 };
 
+// Rebuild from the database at most once a minute so admin edits appear without
+// a redeploy. Mutations also trigger on-demand revalidation (see admin actions).
+export const revalidate = 60;
+
 export default async function BlogIndex() {
   const posts = await getPublishedPosts();
   const [featured, ...rest] = posts;

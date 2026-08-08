@@ -46,6 +46,7 @@ export async function importStarterContent() {
 
   revalidatePath("/");
   revalidatePath("/blog");
+  revalidatePath("/blog/[slug]", "page");
   revalidatePath("/admin/blog");
   revalidatePath("/admin/gallery");
 }
@@ -106,6 +107,7 @@ export async function savePost(formData: FormData) {
   }
 
   revalidatePath("/blog");
+  revalidatePath("/blog/[slug]", "page");
   revalidatePath("/admin/blog");
   redirect("/admin/blog");
 }
@@ -116,6 +118,7 @@ export async function deletePost(formData: FormData) {
   const supabase = await createClient();
   await supabase.from("blog_posts").delete().eq("id", id);
   revalidatePath("/blog");
+  revalidatePath("/blog/[slug]", "page");
   revalidatePath("/admin/blog");
 }
 
