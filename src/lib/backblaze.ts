@@ -7,16 +7,16 @@ import {
 // Backblaze B2 is S3-compatible. These env vars are shared by staging + prod
 // so both point at the SAME bucket/folder (optimizes storage as requested).
 //
-//   B2_ENDPOINT          e.g. https://s3.us-west-004.backblazeb2.com
-//   B2_REGION            e.g. us-west-004
+//   B2_ENDPOINT          e.g. https://s3.us-east-005.backblazeb2.com
+//   B2_REGION            e.g. us-east-005
 //   B2_KEY_ID            application key id
 //   B2_APP_KEY           application key secret
 //   B2_BUCKET            bucket name
 //   B2_PUBLIC_BASE_URL   public base for reads, e.g.
-//                        https://f004.backblazeb2.com/file/your-bucket
+//                        https://f005.backblazeb2.com/file/your-bucket
 
 const endpoint = process.env.B2_ENDPOINT ?? "";
-const region = process.env.B2_REGION ?? "us-west-004";
+const region = process.env.B2_REGION ?? "us-east-005";
 const keyId = process.env.B2_KEY_ID ?? "";
 const appKey = process.env.B2_APP_KEY ?? "";
 
